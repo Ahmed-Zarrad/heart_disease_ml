@@ -13,6 +13,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = PROJECT_ROOT / "data"
 MODELS_DIR = PROJECT_ROOT / "models"
 REPORTS_DIR = PROJECT_ROOT / "reports"
+GRAPH_DIR = REPORTS_DIR / "graphs"
 
 DATA_PATH = DATA_DIR / "heart.csv"
 MODEL_PATH = MODELS_DIR / "best_model.joblib"          # fitted sklearn Pipeline
@@ -24,6 +25,7 @@ TEST_METRICS_PATH = REPORTS_DIR / "test_metrics.csv"
 # directory.  (data/ is expected to already contain heart.csv.)
 for _d in (DATA_DIR, MODELS_DIR, REPORTS_DIR):
     _d.mkdir(parents=True, exist_ok=True)
+GRAPH_DIR.mkdir(parents=True, exist_ok=True)
 
 # --------------------------------------------------------------------------- #
 # Reproducibility / experiment settings

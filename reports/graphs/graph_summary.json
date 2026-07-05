@@ -1,0 +1,18 @@
+{
+  "output_dir": "/Users/mohammed_abdalhady/Desktop/Home/Projects/heart_disease_ml/reports/graphs",
+  "model_name": "Random Forest",
+  "files": [
+    "01_boxplots_by_class.png",
+    "02_permutation_importance.png",
+    "03_correlation_heatmap.png",
+    "04_scatter_matrix.png",
+    "05_cv_score_boxplots.png",
+    "06_validation_curve.png",
+    "07_confusion_matrix.png",
+    "08_roc_curve.png",
+    "09_shap_mean_abs_bar.png",
+    "10_shap_waterfall.png",
+    "feature_importance_permutation.csv",
+    "graph_summary.json"
+  ]
+}

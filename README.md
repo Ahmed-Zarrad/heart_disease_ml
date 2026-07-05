@@ -26,9 +26,11 @@ heart_disease_ml/
 │   ├── train.py                # K-Fold CV, tuning, final fit  (run this)
 │   ├── evaluate.py             # test metrics + confusion/ROC plots
 │   └── explain.py              # SHAP global + per-patient explanations
+│   └── generate_graphs.py      # end-to-end chart generation for the report
 ├── app/streamlit_app.py        # doctor-facing web interface
 ├── models/                     # saved model + metadata (created by training)
 ├── reports/                    # CV table, test metrics, figures (created by training)
+│   └── graphs/                 # classification graphs generated for the report
 ├── run_pipeline.py             # convenience wrapper around src.train
 └── requirements.txt
 ```
@@ -110,6 +112,15 @@ Enter a patient's data in the sidebar → get a risk probability → see a SHAP
 waterfall plot explaining the individual prediction, plus global feature importance.
 
 For a dedicated step-by-step guide, see [`STREAMLIT_RUN.md`](STREAMLIT_RUN.md).
+
+## 3. Generate report graphs
+
+```bash
+source .venv/bin/activate
+python -m src.generate_graphs
+```
+
+This writes the requested classification visuals to [`reports/graphs/`](reports/graphs/) including class-grouped box plots, correlation plots, permutation importance, cross-validation boxplots, a validation curve, confusion matrix, ROC curve, SHAP importance, and a SHAP waterfall plot.
 
 ---
 
