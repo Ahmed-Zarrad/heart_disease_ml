@@ -103,21 +103,7 @@ def permutation_importance_plot(model, X_test, y_test, out_dir: Path):
     )
     ax.set_title("Permutation importance ranking")
     ax.set_xlabel("Decrease in ROC-AUC when shuffled")
-    return _save_fig(fig, out_dir / "02_permutation_importance.png")
-
-
-def correlation_heatmap(df: pd.DataFrame, ranked_features: list[str], out_dir: Path):
-    features = [f for f in ranked_features if f in df.columns][:6]
-    corr = df[features].corr(numeric_only=True)
-    fig, ax = plt.subplots(figsize=(8, 6))
-    im = ax.imshow(corr.values, cmap="coolwarm", vmin=-1, vmax=1)
-    ax.set_xticks(range(len(features)))
-    ax.set_yticks(range(len(features)))
-    ax.set_xticklabels(features, rotation=45, ha="right")
-    ax.set_yticklabels(features)
-    ax.set_title("Correlation heatmap of the most relevant features")
-    fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
-    return _save_fig(fig, out_dir / "03_correlation_heatmap.png")
+    return _save_fig(fig, out_dir / "03_permutation_importance.png")
 
 
 def scatter_matrix_plot(df: pd.DataFrame, ranked_features: list[str], out_dir: Path):
@@ -133,7 +119,7 @@ def scatter_matrix_plot(df: pd.DataFrame, ranked_features: list[str], out_dir: P
     )
     fig = axes[0, 0].get_figure()
     fig.suptitle("Scatter matrix of the most relevant features")
-    return _save_fig(fig, out_dir / "04_scatter_matrix.png")
+    return _save_fig(fig, out_dir / "02_scatter_matrix.png")
 
 
 def cross_validated_score_boxplots(X_train, y_train, out_dir: Path):
@@ -170,7 +156,7 @@ def cross_validated_score_boxplots(X_train, y_train, out_dir: Path):
         ax.tick_params(axis="x", rotation=20)
         ax.grid(axis="y", alpha=0.25)
     fig.suptitle("Cross-validated scores across candidate models", fontsize=14)
-    return _save_fig(fig, out_dir / "05_cv_score_boxplots.png")
+    return _save_fig(fig, out_dir / "04_cv_score_boxplots.png")
 
 
 def validation_curve_plot(model, X_train, y_train, out_dir: Path):
@@ -205,14 +191,14 @@ def validation_curve_plot(model, X_train, y_train, out_dir: Path):
     ax.set_title("Validation curve")
     ax.legend()
     ax.grid(alpha=0.25)
-    return _save_fig(fig, out_dir / "06_validation_curve.png")
+    return _save_fig(fig, out_dir / "05_validation_curve.png")
 
 
 def classification_diagnostics(model, X_test, y_test, out_dir: Path):
     evaluate.plot_confusion_matrix(
-        model, X_test, y_test, path=out_dir / "07_confusion_matrix.png"
+        model, X_test, y_test, path=out_dir / "06_confusion_matrix.png"
     )
-    evaluate.plot_roc_curve(model, X_test, y_test, path=out_dir / "08_roc_curve.png")
+    evaluate.plot_roc_curve(model, X_test, y_test, path=out_dir / "07_roc_curve.png")
 
 
 def shap_global_and_local(model, X_train, X_test, out_dir: Path):
@@ -222,7 +208,7 @@ def shap_global_and_local(model, X_train, X_test, out_dir: Path):
     global_exp = explain.explain(model, explainer, background)
     _save_fig(
         explain.global_bar_figure(global_exp),
-        out_dir / "09_shap_mean_abs_bar.png",
+        out_dir / "08_shap_mean_abs_bar.png",
     )
 
     test_probs = model.predict_proba(X_test)[:, 1]
@@ -231,7 +217,7 @@ def shap_global_and_local(model, X_train, X_test, out_dir: Path):
     local_exp = explain.explain(model, explainer, row)
     _save_fig(
         explain.local_explanation_figure(local_exp[0]),
-        out_dir / "10_shap_waterfall.png",
+        out_dir / "09_shap_waterfall.png",
     )
 
 
@@ -247,7 +233,6 @@ def main():
     permutation_importance_plot(model, X_test, y_test, out_dir)
     ranked_features = pd.read_csv(out_dir / "feature_importance_permutation.csv")["feature"].tolist()
 
-    correlation_heatmap(df, ranked_features, out_dir)
     scatter_matrix_plot(df, ranked_features, out_dir)
     cross_validated_score_boxplots(X_train, y_train, out_dir)
     validation_curve_plot(model, X_train, y_train, out_dir)
