@@ -168,7 +168,8 @@ def main():
             st.error(f"Could not generate global importance: {e}")
 
     with st.expander("Patient input (as sent to the model)"):
-        st.dataframe(patient_df.T, use_container_width=True)
+        # Convert to strings so Streamlit can serialize the mixed-type row safely.
+        st.dataframe(patient_df.T.astype(str), width="stretch")
 
 
 if __name__ == "__main__":

@@ -8,6 +8,7 @@ clinical data, returns a risk probability, and uses **SHAP** to explain *why*.
 
 - **Dataset:** [Heart Failure Prediction](https://www.kaggle.com/datasets/fedesoriano/heart-failure-prediction) (fedesoriano) — 918 patients, 11 clinical features + binary target. A copy is already included at [`data/heart.csv`](data/heart.csv).
 - **ML tasks:** preprocessing → classification → comparative analysis → Explainable AI.
+- **Current artifacts:** deterministic train/test splits are saved as [`data/heart_train.csv`](data/heart_train.csv) and [`data/heart_test.csv`](data/heart_test.csv); the latest trained model and reports are in [`models/`](models/) and [`reports/`](reports/).
 
 ---
 
@@ -16,6 +17,8 @@ clinical data, returns a risk probability, and uses **SHAP** to explain *why*.
 ```
 heart_disease_ml/
 ├── data/heart.csv              # the dataset (already included)
+├── data/heart_train.csv        # generated training split
+├── data/heart_test.csv         # generated test split
 ├── src/
 │   ├── config.py               # paths, schema, constants, UI metadata
 │   ├── data_preprocessing.py   # loading, cleaning, leakage-free preprocessor
@@ -82,20 +85,31 @@ Gradient Boosting, SVM, KNN (+ XGBoost if installed).
 
 **Outputs**
 
+- `data/heart_train.csv`, `data/heart_test.csv` — deterministic stratified split of the dataset
 - `reports/cv_results.csv` — cross-validation comparison (accuracy, precision, recall, F1, ROC-AUC ± std)
 - `reports/test_metrics.csv` — held-out test-set metrics of the final model
 - `reports/confusion_matrix.png`, `reports/roc_curve.png`
 - `models/best_model.joblib` — the fitted `Pipeline` (preprocessor + classifier)
 - `models/model_metadata.joblib` — model name, best params, metrics, feature names
 
+Current run summary:
+
+- Best model: Random Forest
+- Test accuracy: 0.8804
+- Test ROC-AUC: 0.9324
+- Test recall: 0.9216
+
 ## 2. Launch the explainable web app
 
 ```bash
+source .venv/bin/activate
 streamlit run app/streamlit_app.py
 ```
 
 Enter a patient's data in the sidebar → get a risk probability → see a SHAP
 waterfall plot explaining the individual prediction, plus global feature importance.
+
+For a dedicated step-by-step guide, see [`STREAMLIT_RUN.md`](STREAMLIT_RUN.md).
 
 ---
 
