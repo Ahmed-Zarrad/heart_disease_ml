@@ -4,9 +4,17 @@ This project includes a Streamlit app for heart-disease risk prediction and SHAP
 
 ## Prerequisites
 
-- Python environment created in `.venv`
+- Python 3.10 or newer; a virtual environment such as `.venv` is recommended
 - Project dependencies installed with `pip install -r requirements.txt`
 - A trained model saved at `models/best_model.joblib`
+
+From the project root, create the environment with:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+```
 
 If you do not have a trained model yet, run:
 

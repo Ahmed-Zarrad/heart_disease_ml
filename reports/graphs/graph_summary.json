@@ -11,6 +11,8 @@
     "07_roc_curve.png",
     "08_shap_mean_abs_bar.png",
     "09_shap_waterfall.png",
-    "feature_importance_permutation.csv"
+    "10_error_characterization.png",
+    "feature_importance_permutation.csv",
+    "graph_summary.json"
   ]
 }

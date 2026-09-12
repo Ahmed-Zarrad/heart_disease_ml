@@ -201,6 +201,69 @@ def classification_diagnostics(model, X_test, y_test, out_dir: Path):
     evaluate.plot_roc_curve(model, X_test, y_test, path=out_dir / "07_roc_curve.png")
 
 
+def error_characterization(model, X_train, X_test, y_test, out_dir: Path):
+    """Save probability, feature-space and SHAP views of test-set errors."""
+    probabilities = model.predict_proba(X_test)[:, 1]
+    predictions = (probabilities >= 0.5).astype(int)
+    truth = np.asarray(y_test)
+    false_positive = (predictions == 1) & (truth == 0)
+    false_negative = (predictions == 0) & (truth == 1)
+
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+
+    axes[0].hist(
+        probabilities[truth == 0], bins=10, alpha=0.6, label="Actual: no disease",
+        color="#4c78a8", edgecolor="white",
+    )
+    axes[0].hist(
+        probabilities[truth == 1], bins=10, alpha=0.6, label="Actual: disease",
+        color="#e45756", edgecolor="white",
+    )
+    axes[0].axvline(0.5, color="#222222", linestyle="--", linewidth=1)
+    axes[0].set_title("Predicted-risk distribution")
+    axes[0].set_xlabel("Predicted probability of disease")
+    axes[0].set_ylabel("Number of test patients")
+    axes[0].legend(fontsize=8)
+
+    axes[1].scatter(
+        X_test.loc[~(false_positive | false_negative), "Oldpeak"],
+        X_test.loc[~(false_positive | false_negative), "MaxHR"],
+        c="#b8c5d6", alpha=0.45, label="Correct",
+    )
+    axes[1].scatter(
+        X_test.loc[false_positive, "Oldpeak"], X_test.loc[false_positive, "MaxHR"],
+        c="#f28e2b", edgecolor="white", linewidth=0.5, label="False positive",
+    )
+    axes[1].scatter(
+        X_test.loc[false_negative, "Oldpeak"], X_test.loc[false_negative, "MaxHR"],
+        c="#e15759", edgecolor="white", linewidth=0.5, label="False negative",
+    )
+    axes[1].set_title("Errors in feature space")
+    axes[1].set_xlabel("Oldpeak (ST depression)")
+    axes[1].set_ylabel("Maximum heart rate")
+    axes[1].legend(fontsize=8)
+
+    wrong = X_test.loc[false_positive | false_negative]
+    wrong_labels = np.where(false_positive[false_positive | false_negative], "False positive", "False negative")
+    background = X_train.sample(min(100, len(X_train)), random_state=config.RANDOM_STATE)
+    explainer = explain.make_explainer(model, background)
+    wrong_exp = explain.explain(model, explainer, wrong)
+    values = np.asarray(wrong_exp.values)
+    feature_names = np.asarray(wrong_exp.feature_names)
+    order = np.argsort(np.abs(values).mean(axis=0))[-8:]
+    fp_values = np.abs(values[np.asarray(wrong_labels) == "False positive"]).mean(axis=0)
+    fn_values = np.abs(values[np.asarray(wrong_labels) == "False negative"]).mean(axis=0)
+    y_positions = np.arange(len(order))
+    axes[2].barh(y_positions + 0.18, fp_values[order], height=0.35, label="False positive", color="#f28e2b")
+    axes[2].barh(y_positions - 0.18, fn_values[order], height=0.35, label="False negative", color="#e15759")
+    axes[2].set_yticks(y_positions, feature_names[order])
+    axes[2].set_title("SHAP magnitude for wrong predictions")
+    axes[2].set_xlabel("Mean absolute SHAP value")
+    axes[2].legend(fontsize=8)
+
+    return _save_fig(fig, out_dir / "10_error_characterization.png")
+
+
 def shap_global_and_local(model, X_train, X_test, out_dir: Path):
     background = X_train.sample(min(100, len(X_train)), random_state=config.RANDOM_STATE)
     explainer = explain.make_explainer(model, background)
@@ -237,6 +300,7 @@ def main():
     cross_validated_score_boxplots(X_train, y_train, out_dir)
     validation_curve_plot(model, X_train, y_train, out_dir)
     classification_diagnostics(model, X_test, y_test, out_dir)
+    error_characterization(model, X_train, X_test, y_test, out_dir)
     shap_global_and_local(model, X_train, X_test, out_dir)
 
     summary = {

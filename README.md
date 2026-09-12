@@ -41,7 +41,7 @@ heart_disease_ml/
 
 ```bash
 cd heart_disease_ml
-python -m venv .venv
+python3 -m venv .venv
 # Windows:
 .venv\Scripts\activate
 # macOS/Linux:
@@ -55,17 +55,11 @@ pip install -r requirements.txt
 
 ---
 
-## How the work is split
+## Workflow
 
-This repository is the **coding part**. The training/testing experiments are run
-on top of it:
-
-| Part | Who | Command / file |
-|------|-----|----------------|
-| Code: preprocessing, models, CV/tuning, evaluation, SHAP, web app | **(coding)** | `src/`, `app/` |
-| Run experiments, K-Fold CV, hyper-parameter tuning, analyse & report results | **(training & testing)** | `python -m src.train`, `reports/` |
-
-Everything below is what the training/testing side runs.
+The complete workflow is contained in this repository: preprocessing, model
+comparison, hyperparameter tuning, evaluation, explainability, report-graph
+generation, and the Streamlit application.
 
 ---
 
@@ -120,7 +114,7 @@ source .venv/bin/activate
 python -m src.generate_graphs
 ```
 
-This writes the requested classification visuals to [`reports/graphs/`](reports/graphs/) including class-grouped box plots, correlation plots, permutation importance, cross-validation boxplots, a validation curve, confusion matrix, ROC curve, SHAP importance, and a SHAP waterfall plot.
+This writes the requested classification visuals to [`reports/graphs/`](reports/graphs/) including class-grouped box plots, correlation plots, permutation importance, cross-validation boxplots, a validation curve, confusion matrix, ROC curve, SHAP importance, a SHAP waterfall plot, and an error-characterization figure. The error figure combines predicted-risk distributions, misclassified samples in feature space, and SHAP importance for false positives versus false negatives.
 
 ---
 
